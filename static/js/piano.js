@@ -25,6 +25,26 @@ function init_octave_sound(){
     // last note is a C
 }
 
+function custom_wave(){
+  var real = new Float32Array(4);
+  var imag = new Float32Array(4);
+
+  var coefficients_2 = [[0.014203569399984786, 0],
+  [0.025917478472564034,-0.0008506385400001219],
+  [0.02305847100722676, 0.004732844848764174],
+  [0.028648553173178493,0.014660109193815688]
+]; // I draw a function that is similar to hammond sound, and got coefficients with a Fourier transformation online
+  for (var i=0; i<coefficients_2.length;i++){
+    real[i] = coefficients[i][0];
+    imag[i] = coefficients[i][1];
+  }
+  console.log("Real: " + real);
+  console.log("Imag: " + imag);
+  var wave = audioCtx.createPeriodicWave(real, imag, {disableNormalization: true});
+  return wave
+}
+
+
 function map_sounds(){
   document.onkeypress = function(e) {
     console.log(e);
@@ -45,6 +65,7 @@ function map_sounds(){
           var frequency = el.attr('data-frequency');
           oscillator.type = 'sine';
           oscillator.frequency.value = frequency; // value in hertz
+          oscillator.setPeriodicWave(custom_wave());
           oscillator.connect(audioCtx.destination);
           var gain = audioCtx.createGain();
           gain.gain.value = 0.1;
