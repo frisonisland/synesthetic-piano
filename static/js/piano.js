@@ -1,20 +1,29 @@
+ID_KEY = 'id';
+OSCILLATOR_KEY = 'oscillator';
+GAIN_KEY = 'gain';
+ACTIVE_KEY = 'active';
+
 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-data_keys = {
-  'a': ['4C', 0, false], // note, audio, keydown
-  'w': ['4C#', 0, false],
-  's': ['4D', 0, false],
-  'e': ['4D#', 0, false],
-  'd': ['4E', 0, false],
-  'f': ['4F', 0, false],
-  't': ['4F#', 0, false],
-  'g': ['4G', 0, false],
-  'y': ['4G#', 0, false],
-  'h': ['4A', 0, false],
-  'u': ['4A#', 0, false],
-  'j': ['4B', 0, false],
-  'k': ['5C',0, false],
-};
+played_octave = 4;
+
+data_keys = {};
+
+function init_octave_sound(){
+  keys = ['a','w','s','e','d','f','t','g','y','h','u','j'];
+  notes = get_notes();
+  for (var i=0; i < keys.length; i++){
+    data_keys[keys[i]] = {[ID_KEY]: played_octave + notes[i],
+      [OSCILLATOR_KEY]: null,
+      [GAIN_KEY]: null,
+      [ACTIVE_KEY]: false}; // build keys with id, sound, keydown
+  }
+  data_keys['k'] = {[ID_KEY]: (played_octave + 1) + "C",
+    [OSCILLATOR_KEY]: null,
+    [GAIN_KEY]: null,
+    [ACTIVE_KEY]: false};
+    // last note is a C
+}
 
 function map_sounds(){
   document.onkeypress = function(e) {
@@ -22,46 +31,44 @@ function map_sounds(){
     var sound = data_keys[e.key];
     var oscillator;
     if (sound){
-      var soundId = sound[0];
+      var soundId = sound[ID_KEY];
       // create oscillator
-      if (sound[2]){
-        oscillator = sound[1];
-        console.log("Continue to play");
-        sound[2] = true;
+      if (sound[ACTIVE_KEY]){
+        oscillator = sound[OSCILLATOR_KEY];
+        sound[ACTIVE_KEY] = true;
       }
       else {
           // key not pressed, instantiate oscillator
-          console.log("Start");
-          sound[1] = audioCtx.createOscillator(); // recreate oscillator
-          oscillator = sound[1];
-
-          console.log("Id: " + soundId);
+          sound[OSCILLATOR_KEY] = audioCtx.createOscillator(); // recreate oscillator
+          oscillator = sound[OSCILLATOR_KEY];
           var el = $("[id='" + soundId + "']");
           var frequency = el.attr('data-frequency');
           oscillator.type = 'sine';
           oscillator.frequency.value = frequency; // value in hertz
           oscillator.connect(audioCtx.destination);
+          var gain = audioCtx.createGain();
+          gain.gain.value = 0.1;
+          gain.connect(audioCtx.destination);
           oscillator.start();
           el.addClass("active");
           synestethic_color(frequency);
-          sound[2] = true;
+          sound[ACTIVE_KEY] = true;
       }
-
     }
     else {
-      console.log("key not mapped : code is", e.keyCode);
+      console.log("key not mapped : ", e.key);
     }
   }
 
   document.onkeyup = function(e) {
     var sound = data_keys[e.key];
     if (sound){
-      var soundId = sound[0];
+      var soundId = sound[ID_KEY];
       console.log("Stop " + e.key);
-      sound[1].stop();
+      sound[OSCILLATOR_KEY].stop();
       var el = $("[id='" + soundId + "']");
       el.removeClass("active");
-      sound[2] = false;
+      sound[ACTIVE_KEY] = false;
     }
   }
 }
@@ -169,6 +176,7 @@ function piano_init(piano_ul, octave_start, octave_stop){
     }
   }
   $(piano_ul).html(keys.join(""));
+  init_octave_sound();
   map_sounds();
 }
 
