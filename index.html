@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, user-scalable=no, maximum-scale=1.0">
+  <title>Synesthetic Piano</title>
+  <link type="text/css" rel="stylesheet" href="./static/css/synestethic-piano.css" />
+</head>
+
+<body>
+  <!-- Piano -->
+  <div class="fixed text-center">
+  <ul class="synestethic-piano" id="piano">
+
+  </ul>
+</div>
+<script
+      src="https://code.jquery.com/jquery-2.2.4.min.js"
+      integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+      crossorigin="anonymous"></script>
+      <script type="text/javascript" src="http://code.jquery.com/color/jquery.color-2.1.2.js"></script>
+
+  <script type="text/javascript" src="./static/js/wavelength_to_color.js"></script>
+  <script type="text/javascript" src="./static/js/piano.js"></script>
+
+
+  <script type="text/javascript">
+    piano_init("#piano",4,5);
+  </script>
+</body>
+
+
+
+</html>
